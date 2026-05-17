@@ -3,10 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use Illuminate\Support\Facades\Artisan;
 
 // ── ROOT ──
 // web.php — cukup satu baris
 Route::get('/', [\App\Http\Controllers\WelcomeController::class, 'index']);
+
+// ── ROUTE PANCINGAN STORAGE LINK ──
+// Nanti HAPUS BAGIAN INI kalau sudah berhasil!
+Route::get('/buat-storage', function () {
+    Artisan::call('storage:link');
+    return 'Mantap! Storage link berhasil dibuat di Railway!';
+});
 
 // ── USER ROUTES ──
 Route::middleware(['auth', 'role:user'])->group(function () {
