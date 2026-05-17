@@ -35,6 +35,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('admins', \App\Http\Controllers\Admin\UserController::class);
 
     Route::get('/transaksi', [\App\Http\Controllers\Admin\TransaksiController::class, 'index'])->name('transaksi.index');
+    Route::patch('/transaksi/booking/{kode}/approve', [\App\Http\Controllers\Admin\TransaksiController::class, 'approveBooking'])->name('transaksi.approveBooking');
+    Route::patch('/transaksi/booking/{kode}/tolak', [\App\Http\Controllers\Admin\TransaksiController::class, 'tolakBooking'])->name('transaksi.tolakBooking');
     Route::patch('/transaksi/{id}/approve', [\App\Http\Controllers\Admin\TransaksiController::class, 'approve'])->name('transaksi.approve');
     Route::patch('/transaksi/{id}/tolak', [\App\Http\Controllers\Admin\TransaksiController::class, 'tolak'])->name('transaksi.tolak');
     Route::get('/transaksi/{id}/tiket', [\App\Http\Controllers\Admin\TransaksiController::class, 'downloadTiket'])->name('transaksi.tiket');

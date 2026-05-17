@@ -11,12 +11,13 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        $transaksi = Transaksi::with(['tiket.pertandingan', 'tiket.penonton'])
-                        ->orderBy('created_at', 'desc')
-                        ->paginate(10);
+        $transaksi = \App\Models\Transaksi::with(['tiket.penonton', 'tiket.pertandingan.stadion', 'tiket.kursi'])
+            ->orderBy('tgl_transaksi', 'desc')
+            ->get()
+            ->groupBy('kode_booking');
 
         return view('admin.transaksi.index', compact('transaksi'));
-    }
+    }  
 
     public function approve($id)
     {
@@ -59,5 +60,29 @@ class TransaksiController extends Controller
             ->setPaper('a5', 'portrait');
 
             return $pdf->download('tiket-' . $tiket->kode_tiket . '.pdf');
+        }
+
+        public function approveBooking($kode)
+        {
+        $transaksis = Transaksi::where('kode_booking', $kode)->get();
+        foreach ($transaksis as $t) {
+            $t->status_bayar = 'Lunas';
+            $t->save();
+            $t->tiket->status_tiket = 'Aktif';
+            $t->tiket->save();
+        }
+        return redirect('/admin/transaksi')->with('success', 'Booking berhasil dikonfirmasi!');
+    }
+
+        public function tolakBooking($kode)
+        {
+            $transaksis = Transaksi::where('kode_booking', $kode)->get();
+            foreach ($transaksis as $t) {
+                $t->status_bayar = 'Gagal';
+                $t->save();
+                $t->tiket->status_tiket = 'Dibatalkan';
+                $t->tiket->save();
+            }
+            return redirect('/admin/transaksi')->with('success', 'Booking berhasil ditolak.');
         }
 }

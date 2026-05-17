@@ -12,11 +12,11 @@ class AdminDashboardController extends Controller
 {
     public function index()
     {
-        $totalTiket      = Tiket::count();
+        $totalTiket = \App\Models\Transaksi::where('status_bayar', 'Lunas')->count();
         $totalPendapatan = Transaksi::where('status_bayar', 'Lunas')->sum('total_bayar');
         $totalPenonton   = User::where('role', 'user')->count();
 
-        $pertandingan = Pertandingan::with(['stadion', 'tiket'])
+        $pertandingan = Pertandingan::with(['stadion', 'tiket.transaksi'])
                             ->orderBy('tanggal_pertandingan', 'desc')
                             ->take(5)
                             ->get();

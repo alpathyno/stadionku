@@ -28,10 +28,9 @@ class BookingController extends Controller
     ]);
 
     $pertandingan = \App\Models\Pertandingan::findOrFail($request->id_pertandingan);
-    $kursiList    = explode(',', $request->id_kursi);
-
-    // Upload bukti bayar sekali saja
+    $kursiList    = array_unique(array_filter(explode(',', $request->id_kursi)));
     $pathBukti = $request->file('bukti_bayar')->store('bukti_bayar', 'public');
+    $kodeBooking = 'BKG-' . strtoupper(\Illuminate\Support\Str::random(8));
 
     foreach ($kursiList as $kursiLabel) {
         $prefix = match($request->zona) {
@@ -50,6 +49,15 @@ class BookingController extends Controller
             return back()->withErrors(['id_kursi' => "Kursi $nomorKursi tidak ditemukan."]);
         }
 
+        $sudahDipesan = Tiket::where('id_pertandingan', $request->id_pertandingan)
+                             ->where('id_kursi', $kursi->id_kursi)
+                             ->whereHas('transaksi', fn($q) => $q->whereIn('status_bayar', ['Pending', 'Lunas']))
+                             ->exists();
+
+        if ($sudahDipesan) {
+            return back()->withErrors(['id_kursi' => "Kursi $nomorKursi sudah dipesan."]);
+        }
+
         $tiket = Tiket::create([
             'id_pertandingan' => $request->id_pertandingan,
             'id_penonton'     => auth()->id(),
@@ -62,6 +70,7 @@ class BookingController extends Controller
 
         Transaksi::create([
             'id_tiket'      => $tiket->id_tiket,
+            'kode_booking'  => $kodeBooking,
             'metode_bayar'  => $request->metode_bayar,
             'bukti_bayar'   => $pathBukti,
             'total_bayar'   => $request->harga + 15000,

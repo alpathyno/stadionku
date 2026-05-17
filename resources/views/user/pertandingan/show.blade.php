@@ -14,16 +14,21 @@
 {{-- MATCH HEADER --}}
 <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px 28px;margin-bottom:20px">
     <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
-        <div style="text-align:center;min-width:120px">
-            @if($pertandingan->logo_tuan_rumah)
-                <img src="{{ asset('storage/' . $pertandingan->logo_tuan_rumah) }}"
-                    style="width:64px;height:64px;object-fit:contain;object-position:center;margin:0 auto 10px;display:block;flex-shrink:0">
-            @else
-                <div style="width:60px;height:60px;border-radius:50%;background:var(--card2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px">⚽</div>
-            @endif
+
+        {{-- Tuan Rumah --}}
+        <div style="text-align:center;min-width:140px;flex-shrink:0">
+            <div style="width:64px;height:64px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center">
+                @if($pertandingan->logo_tuan_rumah)
+                    <img src="{{ asset('storage/' . $pertandingan->logo_tuan_rumah) }}"
+                        style="width:64px;height:64px;object-fit:contain;display:block;margin:0 auto">
+                @else
+                    <div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:26px">⚽</div>
+                @endif
+            </div>
             <div style="font-size:15px;font-weight:600">{{ $pertandingan->tim_tuan_rumah }}</div>
         </div>
 
+        {{-- VS --}}
         <div style="flex:1;text-align:center">
             <div style="font-size:28px;font-weight:700;color:var(--muted);letter-spacing:-1px">VS</div>
             <div style="font-size:12px;color:var(--muted);margin-top:4px;font-family:monospace">
@@ -37,15 +42,19 @@
             </div>
         </div>
 
-        <div style="text-align:center;min-width:120px">
-            @if($pertandingan->logo_tamu)
-                <img src="{{ asset('storage/' . $pertandingan->logo_tamu) }}"
-                    style="width:64px;height:64px;object-fit:contain;object-position:center;margin:0 auto 10px;display:block;flex-shrink:0">
-            @else
-                <div style="width:60px;height:60px;border-radius:50%;background:var(--card2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px">⚽</div>
-            @endif
+        {{-- Tamu --}}
+        <div style="text-align:center;min-width:140px;flex-shrink:0">
+            <div style="width:64px;height:64px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center">
+                @if($pertandingan->logo_tamu)
+                    <img src="{{ asset('storage/' . $pertandingan->logo_tamu) }}"
+                        style="width:64px;height:64px;object-fit:contain;display:block;margin:0 auto">
+                @else
+                    <div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:26px">⚽</div>
+                @endif
+            </div>
             <div style="font-size:15px;font-weight:600">{{ $pertandingan->tim_tamu }}</div>
         </div>
+
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
@@ -70,6 +79,16 @@
 
 {{-- FORM membungkus semua --}}
 <form id="form-booking" method="POST" action="/booking" enctype="multipart/form-data">
+@if($errors->any())
+    <div style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:#f87171;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px">
+        <strong>Terjadi kesalahan:</strong>
+        <ul style="margin-top:6px;padding-left:16px">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 @csrf
 <input type="hidden" name="id_pertandingan" value="{{ $pertandingan->id_pertandingan }}">
 <input type="hidden" name="zona" id="input-zona" value="VIP">
@@ -300,13 +319,26 @@
                     Upload Bukti Pembayaran <span style="color:#f87171">*</span>
                 </label>
                 <input type="file" name="bukti_bayar" id="bukti_bayar" accept="image/*"
-                    onchange="previewBukti(this)"
-                    style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:8px;font-size:13px;font-family:var(--font);outline:none">
+                    onchange="previewBukti(this)" style="display:none">
+
+                <label for="bukti_bayar" id="label-bukti"
+                    style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s"
+                    onmouseover="this.style.borderColor='var(--accent)'"
+                    onmouseout="this.style.borderColor='var(--border)'">
+                    <span style="background:var(--accent);color:#0c0c0c;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;flex-shrink:0">
+                        📎 Pilih File
+                    </span>
+                    <span id="file-name" style="font-size:12px;color:var(--muted)">Belum ada file dipilih</span>
+                </label>
                 <div style="font-size:11px;color:var(--muted);margin-top:6px">
                     Upload foto/screenshot bukti transfer atau pembayaran. JPG/PNG, maks 2MB.
                 </div>
                 <div id="preview-bukti" style="display:none;margin-top:12px">
                     <img id="preview-img" src="" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid var(--border);object-fit:contain">
+                    <button type="button" onclick="hapusBukti()"
+                        style="margin-top:8px;display:flex;align-items:center;gap:6px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:#f87171;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font)">
+                        🗑 Hapus Gambar
+                    </button>
                 </div>
             </div>
         </div>
@@ -496,18 +528,42 @@ function submitBooking() {
     const bukti   = document.getElementById('bukti_bayar').files.length;
     if (!nama || !nik || !email || !telepon) { alert('Lengkapi data penonton terlebih dahulu!'); return; }
     if (bukti === 0) { alert('Upload bukti pembayaran terlebih dahulu!'); return; }
+
+    const btn = document.getElementById('btn-checkout');
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+    btn.style.opacity = '0.6';
+    btn.style.cursor = 'not-allowed';
+
+    console.log('id_kursi dikirim:', document.getElementById('input-kursi').value);
+    
     document.getElementById('form-booking').submit();
 }
 
 function previewBukti(input) {
     const preview = document.getElementById('preview-bukti');
     const img = document.getElementById('preview-img');
+    const fileName = document.getElementById('file-name');
+
     if (input.files && input.files[0]) {
+        fileName.textContent = input.files[0].name;
+        fileName.style.color = 'var(--text)';
+
         const reader = new FileReader();
         reader.onload = e => { img.src = e.target.result; preview.style.display = 'block'; };
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+function hapusBukti() {
+    document.getElementById('bukti_bayar').value = '';
+    document.getElementById('preview-img').src = '';
+    document.getElementById('preview-bukti').style.display = 'none';
+    document.getElementById('file-name').textContent = 'Belum ada file dipilih';
+    document.getElementById('file-name').style.color = 'var(--muted)';
+}
+
+
 
 let timerSec = 14 * 60 + 59;
 setInterval(() => {

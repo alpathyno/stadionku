@@ -22,7 +22,7 @@
     <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Tiket Terjual</div>
         <div style="font-size:32px;font-weight:700;color:var(--accent);letter-spacing:-1px">{{ number_format($totalTiket) }}</div>
-        <div style="font-size:11px;color:#4ade80;margin-top:6px">↑ Total semua transaksi</div>
+        <div style="font-size:11px;color:#4ade80;margin-top:6px">↑ Transaksi lunas</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Total Pendapatan</div>
@@ -72,7 +72,7 @@
                     {{ $p->tiket->count() }} / {{ number_format($p->stadion->kapasitas ?? 0) }}
                 </td>
                 <td style="padding:14px 16px;font-size:13px;font-weight:600;color:var(--accent)">
-                    Rp {{ number_format($p->tiket->sum('harga'), 0, ',', '.') }}
+                    Rp {{ number_format($p->tiket->filter(fn($t) => $t->transaksi && $t->transaksi->status_bayar === 'Lunas')->sum('harga'), 0, ',', '.') }}
                 </td>
                 <td style="padding:14px 16px">
                     @if($p->status === 'Dijual')

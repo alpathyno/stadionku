@@ -12,7 +12,9 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        $totalTiket  = Tiket::where('id_penonton', $user->id)->count();
+        $totalTiket  = Tiket::where('id_penonton', $user->id)
+                            ->where('status_tiket', 'Aktif')
+                            ->count();
         $totalNonton = Tiket::where('id_penonton', $user->id)
                             ->where('status_tiket', 'Digunakan')->count();
         $totalBayar  = Tiket::where('id_penonton', $user->id)

@@ -58,8 +58,18 @@
                 style="width:48px;height:48px;object-fit:contain;border-radius:50%;background:var(--card2);border:1px solid var(--border);margin-bottom:8px;display:block">
             @endif
         @endisset
-        <input type="file" name="logo_tuan_rumah" accept="image/*"
-            style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:8px;font-size:13px;font-family:var(--font);outline:none">
+        <input type="file" name="logo_tuan_rumah" id="logo_tuan_rumah" accept="image/*" style="display:none"
+            onchange="previewLogo(this, 'preview-tuan', 'name-tuan')">
+        <label for="logo_tuan_rumah"
+            style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer"
+            onmouseover="this.style.borderColor='var(--accent)'"
+            onmouseout="this.style.borderColor='var(--border)'">
+            <span style="background:var(--accent);color:#0c0c0c;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;flex-shrink:0">📎 Pilih File</span>
+            <span id="name-tuan" style="font-size:12px;color:var(--muted)">Belum ada file dipilih</span>
+        </label>
+        <div id="preview-tuan" style="display:none;margin-top:8px">
+            <img id="preview-tuan-img" src="" style="width:48px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border)">
+        </div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG/PNG/WEBP, maks 2MB</div>
     </div>
     <div>
@@ -72,8 +82,18 @@
                 style="width:48px;height:48px;object-fit:contain;border-radius:50%;background:var(--card2);border:1px solid var(--border);margin-bottom:8px;display:block">
             @endif
         @endisset
-        <input type="file" name="logo_tamu" accept="image/*"
-            style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:8px;font-size:13px;font-family:var(--font);outline:none">
+        <input type="file" name="logo_tamu" id="logo_tamu" accept="image/*" style="display:none"
+            onchange="previewLogo(this, 'preview-tamu', 'name-tamu')">
+        <label for="logo_tamu"
+            style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer"
+            onmouseover="this.style.borderColor='var(--accent)'"
+            onmouseout="this.style.borderColor='var(--border)'">
+            <span style="background:var(--accent);color:#0c0c0c;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;flex-shrink:0">📎 Pilih File</span>
+            <span id="name-tamu" style="font-size:12px;color:var(--muted)">Belum ada file dipilih</span>
+        </label>
+        <div id="preview-tamu" style="display:none;margin-top:8px">
+            <img id="preview-tamu-img" src="" style="width:48px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border)">
+        </div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG/PNG/WEBP, maks 2MB</div>
     </div>
 </div>
@@ -166,4 +186,20 @@
     </div>
 </div>
 
+
+<script>
+function previewLogo(input, previewId, nameId) {
+    const name = document.getElementById(nameId);
+    const preview = document.getElementById(previewId);
+    const img = document.getElementById(previewId + '-img');
+
+    if (input.files && input.files[0]) {
+        name.textContent = input.files[0].name;
+        name.style.color = 'var(--text)';
+        const reader = new FileReader();
+        reader.onload = e => { img.src = e.target.result; preview.style.display = 'block'; };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 @endsection

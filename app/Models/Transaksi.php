@@ -11,6 +11,7 @@ class Transaksi extends Model
 
     protected $fillable = [
         'id_tiket',
+        'kode_booking',
         'metode_bayar',
         'bukti_bayar',
         'total_bayar',

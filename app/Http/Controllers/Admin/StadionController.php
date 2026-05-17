@@ -38,7 +38,9 @@ class StadionController extends Controller
             'alamat.required'       => 'Alamat wajib diisi.',
         ]);
 
-        Stadion::create($request->all());
+        $stadion = Stadion::create($request->all());
+
+        \Database\Seeders\KursiSeeder::generateForStadion($stadion->id_stadion);
 
         return redirect('/admin/stadion')
             ->with('success', 'Stadion berhasil ditambahkan!');
