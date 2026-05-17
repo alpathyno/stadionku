@@ -12,16 +12,17 @@ Route::get('/', [\App\Http\Controllers\WelcomeController::class, 'index']);
 // ── ROUTE PANCINGAN STORAGE LINK ──
 // Nanti HAPUS BAGIAN INI kalau sudah berhasil!
 Route::get('/buat-storage', function () {
-    // Bersihkan semua jenis cache di Laravel
+    // 1. Bersihkan cache lama yang menyumbat
     Artisan::call('config:clear');
     Artisan::call('cache:clear');
-    Artisan::call('view:clear');
-    Artisan::call('route:clear');
     
-    // Pastikan storage link tetap aman
-    Artisan::call('storage:link');
+    // 2. Paksa Laravel membuat semua tabel yang hilang langsung di server
+    Artisan::call('migrate --force'); 
     
-    return 'Mantap! Semua cache Laravel sudah dibersihkan!';
+    // 3. Pasang ulang storage link
+    Artisan::call('storage:link'); 
+    
+    return 'BOOM! Cache bersih, Database sukses di-migrate, dan Storage aktif!';
 });
 
 // ── USER ROUTES ──
