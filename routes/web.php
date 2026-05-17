@@ -12,17 +12,19 @@ Route::get('/', [\App\Http\Controllers\WelcomeController::class, 'index']);
 // ── ROUTE PANCINGAN STORAGE LINK ──
 // Nanti HAPUS BAGIAN INI kalau sudah berhasil!
 Route::get('/buat-storage', function () {
-    // 1. Bersihkan cache lama yang menyumbat
+    // 1. Menghapus file cache konfigurasi yang mengunci tanda kutip kemarin
     Artisan::call('config:clear');
+    Artisan::call('clear-compiled');
+    
+    // 2. Membersihkan cache data aplikasi agar kembali sinkron dengan MySQL
     Artisan::call('cache:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
     
-    // 2. Paksa Laravel membuat semua tabel yang hilang langsung di server
-    Artisan::call('migrate --force'); 
+    // 3. Membuka ulang jalur optimasi Laravel
+    Artisan::call('optimize:clear');
     
-    // 3. Pasang ulang storage link
-    Artisan::call('storage:link'); 
-    
-    return 'BOOM! Cache bersih, Database sukses di-migrate, dan Storage aktif!';
+    return 'SINKRONISASI TOTAL BERHASIL! Laravel dipaksa membaca .env baru!';
 });
 
 // ── USER ROUTES ──
