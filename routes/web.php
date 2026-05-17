@@ -13,20 +13,14 @@ Route::get('/', [\App\Http\Controllers\WelcomeController::class, 'index']);
 // Nanti HAPUS BAGIAN INI kalau sudah berhasil!
 Route::get('/buat-storage', function () {
     try {
-        $dbName = \DB::connection()->getDatabaseName();
-        $tables = \DB::select('SHOW TABLES');
+        // Menyuruh Laravel membuat semua tabel dari nol ke database baru
+        \Artisan::call('migrate', ['--force' => true]);
+        \Artisan::call('config:clear');
+        \Artisan::call('cache:clear');
         
-        // Cek apakah tabel pertandingan ada dan hitung isinya
-        $cekTabel = \Illuminate\Support\Facades\Schema::hasTable('pertandingan');
-        $jumlahData = $cekTabel ? \DB::table('pertandingan')->count() : 'TABEL TIDAK DITEMUKAN!';
-
-        return response()->json([
-            '1_database_yang_dibaca_laravel' => $dbName,
-            '2_jumlah_data_pertandingan' => $jumlahData,
-            '3_daftar_tabel_di_database_ini' => $tables,
-        ]);
+        return 'MIGRASI SELESAI! Semua tabel StadionKu berhasil dibuat di database baru!';
     } catch (\Exception $e) {
-        return 'WADUH EROR: ' . $e->getMessage();
+        return 'GAGAL MIGRASI: ' . $e->getMessage();
     }
 });
 
