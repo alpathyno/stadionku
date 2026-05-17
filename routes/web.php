@@ -12,19 +12,14 @@ Route::get('/', [\App\Http\Controllers\WelcomeController::class, 'index']);
 // ── ROUTE PANCINGAN STORAGE LINK ──
 // Nanti HAPUS BAGIAN INI kalau sudah berhasil!
 Route::get('/buat-storage', function () {
-    // 1. Menghapus file cache konfigurasi yang mengunci tanda kutip kemarin
-    Artisan::call('config:clear');
-    Artisan::call('clear-compiled');
+    // Mengambil semua data pertandingan yang dibaca oleh Laravel di server
+    $data = \DB::table('pertandingan')->get();
     
-    // 2. Membersihkan cache data aplikasi agar kembali sinkron dengan MySQL
-    Artisan::call('cache:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-    
-    // 3. Membuka ulang jalur optimasi Laravel
-    Artisan::call('optimize:clear');
-    
-    return 'SINKRONISASI TOTAL BERHASIL! Laravel dipaksa membaca .env baru!';
+    return response()->json([
+        'pesan' => 'Ini adalah data yang DIBACA OLEH LARAVEL di server Railway:',
+        'jumlah_data' => $data->count(),
+        'isi_data' => $data
+    ]);
 });
 
 // ── USER ROUTES ──
