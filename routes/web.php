@@ -12,14 +12,22 @@ Route::get('/', [\App\Http\Controllers\WelcomeController::class, 'index']);
 // ── ROUTE PANCINGAN STORAGE LINK ──
 // Nanti HAPUS BAGIAN INI kalau sudah berhasil!
 Route::get('/buat-storage', function () {
-    // Mengambil semua data pertandingan yang dibaca oleh Laravel di server
-    $data = \DB::table('pertandingan')->get();
-    
-    return response()->json([
-        'pesan' => 'Ini adalah data yang DIBACA OLEH LARAVEL di server Railway:',
-        'jumlah_data' => $data->count(),
-        'isi_data' => $data
-    ]);
+    try {
+        $dbName = \DB::connection()->getDatabaseName();
+        $tables = \DB::select('SHOW TABLES');
+        
+        // Cek apakah tabel pertandingan ada dan hitung isinya
+        $cekTabel = \Illuminate\Support\Facades\Schema::hasTable('pertandingan');
+        $jumlahData = $cekTabel ? \DB::table('pertandingan')->count() : 'TABEL TIDAK DITEMUKAN!';
+
+        return response()->json([
+            '1_database_yang_dibaca_laravel' => $dbName,
+            '2_jumlah_data_pertandingan' => $jumlahData,
+            '3_daftar_tabel_di_database_ini' => $tables,
+        ]);
+    } catch (\Exception $e) {
+        return 'WADUH EROR: ' . $e->getMessage();
+    }
 });
 
 // ── USER ROUTES ──
