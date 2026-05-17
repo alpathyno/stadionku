@@ -12,8 +12,16 @@ Route::get('/', [\App\Http\Controllers\WelcomeController::class, 'index']);
 // ── ROUTE PANCINGAN STORAGE LINK ──
 // Nanti HAPUS BAGIAN INI kalau sudah berhasil!
 Route::get('/buat-storage', function () {
+    // Bersihkan semua jenis cache di Laravel
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
+    
+    // Pastikan storage link tetap aman
     Artisan::call('storage:link');
-    return 'Mantap! Storage link berhasil dibuat di Railway!';
+    
+    return 'Mantap! Semua cache Laravel sudah dibersihkan!';
 });
 
 // ── USER ROUTES ──
